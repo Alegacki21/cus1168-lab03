@@ -1,16 +1,17 @@
 package academy.javapro;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class Lexer {
     private static final Pattern[] PATTERNS = {
-            Pattern.compile("\\s+"),                                       // whitespace
+            Pattern.compile("\\s+"), // whitespace
             Pattern.compile("\\b(if|else|for|while|int|float|String)\\b"), // keywords
-            Pattern.compile("\\b\\d+(\\.\\d+)?\\b"),                      // literals
-            Pattern.compile("==|<=|>=|!=|&&|\\|\\||[+\\-*/=<>!]"),        // operators
-            Pattern.compile("[;,.(){}\\[\\]]"),                           // punctuation
-            Pattern.compile("\\b[a-zA-Z_][a-zA-Z0-9_]*\\b")               // identifiers
+            Pattern.compile("\\b\\d+(\\.\\d+)?\\b"), // literals
+            Pattern.compile("==|<=|>=|!=|&&|\\|\\||[+\\-*/=<>!]"), // operators
+            Pattern.compile("[;,.(){}\\[\\]]"), // punctuation
+            Pattern.compile("\\b[a-zA-Z_][a-zA-Z0-9_]*\\b") // identifiers
     };
 
     private static final String[] TYPES = {
@@ -35,7 +36,9 @@ public class Lexer {
      * @param input The source code string to be tokenized
      */
     public Lexer(String input) {
-        // Your code here
+        this.input = input;
+        this.tokens = new ArrayList<>();
+        this.position = 0;
     }
 
     /**
@@ -44,30 +47,47 @@ public class Lexer {
      * 1. Create a while loop that continues while position < input.length()
      * 2. Get the remaining input using substring(position)
      * 3. Try to match each pattern in PATTERNS array:
-     *    - Create a matcher using pattern.matcher(remainingInput)
-     *    - Use matcher.lookingAt() to check if it matches at current position
-     *    - If match found:
-     *      a. Get the matched text using matcher.group()
-     *      b. If not whitespace, add new token to tokens list
-     *      c. Update position by adding length of matched text
+     * - Create a matcher using pattern.matcher(remainingInput)
+     * - Use matcher.lookingAt() to check if it matches at current position
+     * - If match found:
+     * a. Get the matched text using matcher.group()
+     * b. If not whitespace, add new token to tokens list
+     * c. Update position by adding length of matched text
      * 4. If no pattern matches, throw RuntimeException for invalid input
      */
     public void tokenize() {
-        // Your code here
+        while (position < input.length()) {
+            String remaining = input.substring(position);
+            boolean matched = false;
+            for (int i = 0; i < PATTERNS.length; i++) {
+                java.util.regex.Matcher matcher = PATTERNS[i].matcher(remaining);
+                if (matcher.lookingAt()) {
+                    String text = matcher.group();
+                    if (i != 0) {
+                        tokens.add(new String[] { TYPES[i], text });
+                    }
+                    position += text.length();
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                throw new RuntimeException("Invalid input at position " + position);
+            }
+        }
     }
 
     /**
      * TODO: Return the list of tokens
      * 1. Return the tokens list containing all found tokens
      * 2. Each token should be a String array with two elements:
-     *    - First element: Token type (from TYPES array)
-     *    - Second element: Token value (the actual text)
+     * - First element: Token type (from TYPES array)
+     * - Second element: Token value (the actual text)
      *
      * @return List<String [ ]> The list of tokens
      */
     public List<String[]> getTokens() {
-        // Your code here
-        return null;
+        return tokens;
     }
 
     public static void main(String[] args) {
